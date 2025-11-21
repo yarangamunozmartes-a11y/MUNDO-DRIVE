@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundo Drive — Panel</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0f12;
+      --panel:#121820;
+      --card:#1a232e;
+      --accent:#16b1ff;
+      --accent2:#009dff;
+      --text:#eaf8ff;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      padding:20px;
+      min-height:100vh;
+    }
+
+    h2{
+      font-size:2rem;
+      font-weight:700;
+      margin-bottom:10px;
+      text-shadow:0 0 10px #00aaff55;
+      animation:fade .7s ease;
+    }
+
+    #uname{
+      font-weight:600;
+      color:var(--accent);
+    }
+
+    #search{
+      width:100%;
+      padding:12px 14px;
+      border:none;
+      border-radius:14px;
+      background:#1c2733;
+      color:#fff;
+      margin:18px 0;
+      font-size:1rem;
+      outline:none;
+      transition:.3s;
+    }
+    #search:focus{
+      background:#243445;
+      box-shadow:0 0 0 2px var(--accent);
+    }
+
+    #addBtn{
+      background:var(--accent);
+      color:#000;
+      padding:12px 20px;
+      border:none;
+      border-radius:14px;
+      font-weight:600;
+      cursor:pointer;
+      transition:.3s;
+    }
+    #addBtn:hover{
+      transform:scale(1.05);
+      background:var(--accent2);
+    }
+
+    /* Cards */
+    #list > div{
+      background:var(--card);
+      padding:16px;
+      border-radius:16px;
+      margin-bottom:12px;
+      box-shadow:0 4px 14px #0005;
+      animation:fadeUp .4s ease;
+    }
+    #list b{
+      color:var(--accent);
+      font-size:1.1rem;
+    }
+
+    button{
+      padding:8px 14px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      transition:.3s;
+      margin-right:6px;
+      margin-top:8px;
+    }
+    button:hover{
+      transform:scale(1.05);
+    }
+
+    .blueBtn{background:var(--accent);color:#000;}
+    .grayBtn{background:#344455;color:#fff;}
+    .redBtn{background:#ff4444;color:#fff;}
+
+    /* Modal */
+    #modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:#0009;
+      justify-content:center;
+      align-items:center;
+      animation:fade .4s ease;
+    }
+    #modalContent{
+      background:var(--panel);
+      padding:25px;
+      width:320px;
+      border-radius:20px;
+      box-shadow:0 6px 20px #0007;
+      animation:fadeUp .4s ease;
+    }
+    #modalContent h3{
+      margin-bottom:12px;
+    }
+
+    #modalContent input{
+      width:100%;
+      background:#1c2733;
+      border:none;
+      padding:10px;
+      margin-bottom:12px;
+      border-radius:10px;
+      color:#fff;
+      outline:none;
+    }
+    #modalContent input:focus{
+      background:#243445;
+      box-shadow:0 0 0 2px var(--accent);
+    }
+
+    @keyframes fade {
+      from{opacity:0;}
+      to{opacity:1;}
+    }
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(10px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+  </style>
+</head>
+
+<body>
+
+<script>
+  const user = localStorage.getItem("mundodrive");
+  if (!user) window.location.href = "index.html";
+</script>
+
+<h2>Mundo Drive</h2>
+<p>Bienvenido: <b id="uname"></b></p>
+
+<input id="search" placeholder="Buscar..." />
+
+<button id="addBtn">➕ Añadir archivo</button>
+
+<h3 style="margin-top:20px;margin-bottom:10px;">📂 Archivos</h3>
+<div id="list"></div>
+
+<!-- Modal -->
+<div id="modal">
+  <div id="modalContent">
+    <h3>Nuevo archivo</h3>
+
+    <input id="dname" placeholder="Nombre" />
+    <input id="dlink" placeholder="Enlace" />
+    <input id="ddesc" placeholder="Descripción" />
+
+    <button class="blueBtn" id="save">Guardar</button>
+    <button class="grayBtn" id="close">Cerrar</button>
+  </div>
+</div>
+
+<script>
+document.getElementById("uname").innerText = user;
+
+let docs = JSON.parse(localStorage.getItem("mundoDocs")) || [
+  
+  { id:idGen(), name:"🌍 LIBROS VARIADOS", link:"https://drive.google.com/drive/folders/1Mgb-9Yh5AqDSfZJoTzp5Ze5w1BC67T2A", desc:"Diferentes temas." },
+  { id:idGen(), name:"📚 CURSOS VARIADOS", link:"https://drive.google.com/drive/folders/1m5C0dJT4avirnS-wIIpE2gNV6FnhykJu", desc:"Colección de cursos variados." },   { id:idGen(), name:"🗣️ HABLA CON PODER", link:"#", desc:"Curso para expresarte con seguridad." },
+  { id:idGen(), name:"🎓 HISTORIA UNIVERSAL", link:"#", desc:"Colección de libros históricos." },
+  { id:idGen(), name:"fisiognomia", link:"https://drive.google.com/file/d/1AMlSTM6zixGSZJUYK79Gfl4xwtCbwcT5/view?usp=drivesdk", desc:"Libro exclusivo", },
+  { id:idGen(), name:"LIBROS DE CIENCIA", link:"https://drive.google.com/drive/folders/1sxtOzyXSEI48xrDbQS9yaHH4-83c2REB?fbclid=IwAR13-l23d-nr2Gkr4ltkoBwJCp3mHCaJrQeYixIRyU5ifnVhlE-y-Hhe8Wg", desc:"cientificos", },
+  { id:idGen(), name:"Súper curso de Branding y ventas.", link:"https://drive.google.com/drive/mobile/folders/1Z2ipMIuIjwd2Er1S4DzHw7HODetm0jzg", desc:"oportunidad de sabiduria", },
+  { id:idGen(), name:"LIBROS DE BIOLOGÍA📚✏️", link:"https://drive.google.com/drive/folders/1N7O1dabnRlPArS_kxy9OpG0aNiOzWfuj", desc:"aprender", },
+  { id:idGen(), name:"LIBROS DE FISICA", link:"https://drive.google.com/drive/u/1/folders/1Zqdjp1cwGvNnb5u4fLQf_Ck18SJx6fZL", desc:"fisica", },
+  { id:idGen(), name:"LIBROS DE INGENIERIA CIVIL👷🏻📚 ", link:"https://drive.google.com/drive/folders/1pO0tn3kXZXa7uu-0kEOZjbSg7pkrddiQ", desc:"INGENERIA", },
+  { id:idGen(), name:"📚LIBROS DE NUTRICIÓN📖 ", link:"https://drive.google.com/drive/mobile/folders/1mhHYRokbWumykVm72z-CuN53d1Duvr80", desc:"Nutricion", },
+  { id:idGen(), name:"LIBROS DE DERECHO👩🏻‍⚖️📚 ", link:"https://drive.google.com/drive/folders/10KrHDIxIzp8LAVAHkG_vt9cxkaw1V6HQ", desc:"derecho", },
+  { id:idGen(), name:"EL MUNDO ES MATEMÁTICO ", link:"https://drive.google.com/drive/folders/1RHV9nW4kuskYBJ72KOnBNw47G52p_M3A", desc:"mate", },
+  { id:idGen(), name:"DISEÑO GRÁFICO DE PRINCIPIANTE A EXPERTO", link:"https://drive.google.com/drive/u/0/folders/1WzVLVcfKO199H18YuLtc0gSOAGWtw7HA?fbcli", desc:"curso valorado", },
+  { id:idGen(), name:"CURSO ADOBE LIGHTROOM", link:"https://drive.google.com/drive/folders/1Z8yNXqORh-kWKQpLbB65MzOs6jt6hss9", desc:"aporta", },
+  { id:idGen(), name:"CURSO ADOBE ILLUSTRATOR", link:"https://drive.google.com/drive/folders/1FiLAOUKbypTOOxysRcTlH1aAMX-9O_Ze", desc:"adobe", },
+  { id:idGen(), name:"RETRATO REALISTA CON LÁPIZ DE GRAFITO", link:"https://drive.google.com/drive/folders/1xLRASx9vEktCIdpdKCaV1cC8JdwwdKXU?usp=sharing", desc:"buenaso", },
+  { id:idGen(), name:"RETRATO REALISTA CON LÁPICES DE COLORES", link:"https://drive.google.com/drive/folders/1_Vzz0TGJhlhBYu0rBdMAl9pp0fqZRU8T?usp=drive_link", desc:"valora", },
+  { id:idGen(), name:"DIBUJO PARA PRINCIPIANTES", link:"https://drive.google.com/drive/folders/1F6A92xLaFxZJwT2xl_Zu276DfJlx-T2r?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"DIBUJO A LÁPIZ DE PRINCIPIANTE A EXPERTO", link:"https://drive.google.com/drive/u/0/folders/1kTLO3LGHwFpXy3Ncl4YDkjNp6Geaza49", desc:"dibujo", },
+  { id:idGen(), name:"DIBUJO INTENSIVO PARA PRINCIPIANTES", link:"https://drive.google.com/drive/folders/1Ip3ocbKtl7niNvnxBng_8uo7AMzVZ95-?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"ILUSTRACIÓN DE TU PUÑO Y TABLETA", link:"https://drive.google.com/drive/folders/1MXIzJfIUugTuxoiLZ31VM2fGv7fdncRU?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"MEGACURSO DE DIBUJO", link:"https://drive.google.com/drive/folders/1Go98K6l9uBuvFHV59ELnX1C3Y5bPbbu9?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"DIBUJO Y CREATIVIDAD PARA PEQUEÑOS GRANDES ARTISTAS", link:"https://drive.google.com/drive/folders/1zeLcpPrJoXFw_bnPPv4FIz-YTuqxKewH?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"DISEÑA Y ANIMA PERSONAJES ESTILO CARTOON", link:"https://drive.google.com/drive/folders/1GnNRJi6_csOGOdzD6J4WL-YToUjefDgj?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"CURSO DIBUJO AL ESTILO COMIC", link:"https://drive.google.com/drive/folders/1as3DjHzcjMwS-a_0dLs7GKPqSdvhNz7F?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"COMICS CON MANGA STUDIO", link:"https://drive.google.com/drive/folders/16IW8Td1MZn5cstO9ggD8pkAptFnDFb1-?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"DIBUJO REALISTA DE LA FIGURA HUMANA", link:"https://drive.google.com/drive/folders/1YUfjH35FMzFEm9zEu8dBzSbJgQdBhY_G?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"ANATÓMICO PARA ILUSTRACIÓN DIGITAL", link:"https://drive.google.com/drive/folders/1E8WIFZtlWA5uHMK6vL3z3gqP1fOtjdp2?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"DIBUJO DE FIGURA HUMANA", link:"https://drive.google.com/drive/folders/1qVzOGUww-BCX95UA1-aC4jEHEqUZVMmL?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"CURSO DIBUJO DE OJOS", link:"https://drive.google.com/drive/folders/1erSXxrzpKhmmnsAt5e8s3Hne8cygtNue?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"CURSO COMO DIBUJAR MANOS", link:"https://drive.google.com/drive/folders/1FQbmCNKx_iuiYso_4XFVWqJBLs1-Kicd?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"CURSO COMO DIBUJAR RETRATOS", link:"https://drive.google.com/drive/folders/1ELJTN7g5LtCy7MoOTldCt18p4YBaMCzJ?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"CURSO COMO DIBUJAR ANIMALES", link:"https://drive.google.com/drive/folders/12s60L7ggb0P1WSMzAJbEQiITR1mFKV3H?usp=drive_link", desc:"dibujo", },
+  { id:idGen(), name:"CONCEPTUALIZACIÓN Y TÉCNICA DE ILUSTRACIÓN DIGITAL", link:"https://drive.google.com/drive/folders/1R93w4BuQN1WTkOXK5ocmpXii-wdyW3lx?usp=drive_link", desc:"adobe", },
+  { id:idGen(), name:"ARQUITECTURA", link:"https://drive.google.com/drive/u/0/mobile/folders/1o3_mKkZ3LPa30ACLA_aO3w0BbXg1SNLE?usp=sharing", desc:"arquitectura", },
+  { id:idGen(), name:"LIBROS DE EMPRENDIMIENTOS", link:"https://drive.google.com/drive/mobile/folders/1spBb8lkQibkedyH19s95IA5wLQKuSJEy?fbclid=IwY2xjawLWdopleHRuA2FlbQIxMQABHkxZbDhx7VOnjyJrwkLn6q7rNVn7VAIMG3LqAHViGwmbRqGxa06p5MinNSX7_aem_QnuW-CyjqQYPEFlMk3G4bA&sfnsn=scwspwa", desc:"emprendimiento", },
+  { id:idGen(), name:"HERBOLARIA", link:"https://drive.google.com/drive/folders/1AJVnz0BVZTKTn8n_XXMiszbS0gtu8VUy", desc:"plantas medicinales", },
+  { id:idGen(), name:"LIBROS Y AUDIOLIBROS", link:"https://drive.google.com/drive/folders/1Mn_zvTYOMuE034l92NzXv0obgKLV-J8u", desc:"etc", },
+  { id:idGen(), name:"LIBROS ESPECIALES", link:"https://drive.google.com/drive/mobile/folders/1OkCPAFCMocNWYq3eXmL9ELUoTxFFSg7g?fbclid=IwY2xjawLXilFleHRuA2FlbQIxMQABHifkCx7w2CfTBY3r6auAvKSuyo5WZ3wjv6dWUpDMqKNiezNKyJtGZJY0YpGd_aem_aQpHx-0GXYVHjS2QABxcfA&sfnsn=scwspwa&sfnsn=scwspwa", desc:"fundamental", },
+  { id:idGen(), name:"Secretos del cerebro", link:"https://drive.google.com/drive/mobile/folders/1Q_tBPGt5-9ZJeuvvp92q1bRu6I19LGo1?fbclid=IwQ0xDSwLdeTJjbGNrAt14d2V4dG4DYWVtAjExAAEe2pANIbT442fAXKLxY8T3ItIQTgBE0AE4qQiYBFv8bZOQWwG6jD-B5Wzuutw_aem_EAVV8OMngI9r6-153LYoHQ", desc:"cerebro", },
+  { id:idGen(), name:"Comprende la Psicología", link:"https://drive.google.com/drive/folders/1990N1NsnSVzQMMhGhlwHI0Ci9uXgA_EV?fbclid=IwAR0wBA1yQbQ6aTTANcop3s-PMuJCa0K5w6_g2iTYSUpyUi90qrGXLWYZQho", desc:"cerebro", },
+  { id:idGen(), name:"LIBROS PAA EMPRESARIOS", link:"https://drive.google.com/drive/mobile/folders/1nOohGSCJ_0PpukLjkY8xHI2VrL8858rz?fbclid=IwY2xjawLgiR1leHRuA2FlbQIxMQABHqn4MU196cKERTFEOB8AaW-7bz_skaVVu7KO3JevJUNnaZkKIaGr7jjlrUIr_aem_MLFBrC9dd970t6SOlSQnVA&sfnsn=scwspwa", desc:"empresa", },
+  { id:idGen(), name:"LIBROS VARIADOS", link:"https://drive.google.com/drive/u/0/mobile/folders/1VFU5CcpwzrA3OeanAQNeHBZyRxMP7iHX", desc:"etc", },
+  { id:idGen(), name:"CUIDADO DEL CUERPO", link:"https://drive.google.com/drive/mobile/folders/1r7G6Gvwy_DWq_AF0SMH2g1IlN3mE5OgT?usp=sharing&fbclid=IwAR316XKcPGaHjJcD1Jyy2--dvtWzhfTqvpXHLD3zsDp2q44BKrODzfZye6g", desc:"cuerpo", },
+  { id:idGen(), name:"LIBROS DE MODA", link:"https://drive.google.com/drive/mobile/folders/1gQlXk6Ak1by_s5sMkeVqUr6RucDcG1qE", desc:"moda", },
+  { id:idGen(), name:"PSICOLOGUIA", link:"https://drive.google.com/drive/folders/1TzN0zwxIaADO4Xf1AMLvtxDO4sDgjEN9?usp=sharing", desc:"mente", },
+  { id:idGen(), name:"CURSO DE FINANZAS", link:"https://drive.google.com/drive/folders/1SzXZp7tWPOiqyFuLEPY5uVxGfn0o-SAs", desc:"finansas", },
+  { id:idGen(), name:"ACADEMIA DE FORMACION", link:"https://drive.google.com/drive/folders/1pai_BIZgHRySZxfQnR2x02djCUfjAE14", desc:"aprende", },
+  { id:idGen(), name:"ABRIDORES DE LIGE", link:"https://drive.google.com/drive/folders/1jK_MLiDOvP9UNw9dbf6Zpe8A-WRW1xDZ", desc:"abrir", },
+  { id:idGen(), name:"PYTHON", link:"https://drive.google.com/drive/folders/1ycQOQq9XvkWUW5Xr2EqabTuA3lGPlkMK", desc:"LIBROS", },
+  { id:idGen(), name:"INGENERIA CIVIL", link:"https://drive.google.com/drive/folders/1yqjWUIZsGc0xlOR_veLfhzXqfAyzR988", desc:"mejores libros", },
+  { id:idGen(), name:"PROGRAMACION", link:"https://drive.google.com/drive/folders/1s1Cc549S99pOCK4aEdagu1vGMFX-n3hd", desc:"informatica", },
+  { id:idGen(), name:"REVIT INTEGRAL", link:"https://drive.google.com/drive/folders/1tZrjw6uizvdqeYV5RfCptYxpc_KjYza2", desc:"", },
+  { id:idGen(), name:"CURSO DE PIANO", link:"https://drive.google.com/drive/folders/1UygK9FLRo5m5UcwZ_wAG1N4HUdUEHHiN", desc:"", },
+  { id:idGen(), name:"MEGACURSO ARQUITECTURA", link:"https://drive.google.com/drive/folders/1MUWK5HxqTYyvmeLJX7X1vBZ6jCRdUOTQ", desc:"", },
+  { id:idGen(), name:"CURSO POWER BI", link:"https://drive.google.com/drive/folders/12BLP5A_qh7HlVqZSgUQj4afP2jc7QWvr", desc:"", },
+  { id:idGen(), name:"TALLER PROFUNDIZACION", link:"https://drive.google.com/drive/folders/1ZlEqfyVeO0kpwbfxk5Xa-erggs903JGo", desc:"", },
+  { id:idGen(), name:"COMO HACER UN PODCAS", link:"https://drive.google.com/drive/folders/1WDJwTjfknRyOXUSngW2eE2V74V91dIIi", desc:"", },
+  { id:idGen (), name:"CURSO DE OJOS", link:"https://drive.google.com/drive/folders/1eoA5mcJNY3VVEanier3U9E9P8mumBCUD",},
+  { id:idGen (), name:"CURSO DE VENTAS", link:"https://drive.google.com/drive/folders/1s6d_YcsN9ewgojG3Sm-jGI2euidB5Xz-",},
+  { id:idGen (), name:"SOCIAL MEDIA ANALITY", link:"https://drive.google.com/drive/folders/1VMvVwVhgOyy88VlRbfOR2e6sJP4GHP_9",},
+  { id:idGen (), name:"CURSO COMO IMPORTAR DESDE CHINA", link:"https://drive.google.com/drive/folders/1kpU6DC-oyVRRn85uDdzm4TnibfW5YY7O",},
+  { id:idGen (), name:"CURSO DE VENTAS", link:"https://drive.google.com/drive/folders/1sQ9o1zIUsew-Xpsi8HV0sVyPcxlGQjI-",},
+  { id:idGen (), name:"CURSO RESIDENCIA", link:"https://drive.google.com/drive/folders/1BNA8y2RLK1hUXigOPef8amnRrgGbnYpO",},
+  { id:idGen (), name:"CURSO DE FACEBOOK", link:"https://drive.google.com/drive/folders/1V6KIt9gxF2p9ZhhEg7URohl38j4PTZ4h",},
+  { id:idGen (), name:"MEGACURSO DE SEDUCCION", link:"https://drive.google.com/drive/folders/1RCkme0vQ4iDARi1ILlq-KuGEpeYLSZ6b",},
+  { id:idGen (), name:"SEDUCCION MEXICANA", link:"https://drive.google.com/drive/folders/0B-O4-e-PJ9embE1uUnE0YzdvR2s?resourcekey=0-0InmiD5Xc91OlLyr-4JIyQ",},
+  { id:idGen (), name:"Libros de seduccion", link:"https://drive.google.com/drive/folders/0B-9KfsezNPQwUzY3amI0b0JHMzg?resourcekey=0-9HRO0k_pvZgP6aAU4cwS6w",},
+  { id:idGen (), name:"METODOS DE MARIO LUNA", link:"https://drive.google.com/drive/folders/1xTRRE73a9PnS_ZNzVCF5qrHXKBlJIu1T",},
+  { id:idGen (), name:"PLAN LIGE", link:"https://drive.google.com/drive/folders/1u2LBn9zhatIsOKBL9EJFL1Fm-yG7XKMG",},
+  { id:idGen (), name:"GNOSIS CURSO", link:"https://drive.google.com/drive/folders/1eEJjg1SraLsOuOBEyBJu1zGT4k_tcyCQ",},
+  { id:idGen (), name:"PILARES DEL HOMBRE", link:"https://drive.google.com/drive/folders/1-5dtQT09BFtXowUx4LNroyd9hxw3yzkp",},
+  { id:idGen (), name:"MARTES EN BASE DE DATOS SQL", link:"https://drive.google.com/drive/folders/1C0jx4ni1ZHOJ3JdDWg1DDqO7wahnJ6MU",},
+  { id:idGen (), name:"MEGAPACK DE REPARACION", link:"https://drive.google.com/drive/folders/1nRhPPqc2khhIwErts3sJEWL8zMhKXZc8",},
+  { id:idGen (), name:"MARKETING DIGITAL", link:"https://drive.google.com/drive/folders/1eDNqypYsBiHctBGzyj5UGVTg6SzPgfps",},
+  { id:idGen (), name:"POWER POIN", link:"https://drive.google.com/drive/folders/1Wu0RPGB77pGnHVKjZduaOZOIsf_0-Ni1",},
+  { id:idGen (), name:"CURSO UDEMY", link:"https://drive.google.com/drive/folders/1-Ua5JGG_zhYMq6ct6kRq3uQfQQ_T7_Kg",},
+  { id:idGen (), name:"CURSOS DE GOOGLE", link:"https://drive.google.com/drive/folders/101_IyYiNayd74mcuPPi95bMEVK5JQ2SL?usp=sharing",},
+  { id:idGen (), name:"CURSO DE REVIT", link:"https://drive.google.com/drive/folders/1tZrjw6uizvdqeYV5RfCptYxpc_KjYza2",},
+  { id:idGen (), name:"MEGACURSO DE EXCEL", link:"https://drive.google.com/drive/mobile/folders/1ApmkgpCdnq_tScJEqZrzdU2Uym8mhxob?usp=sharing&fbclid=IwY2xjawEwxvFleHRuA2FlbQIxMQABHcmgipHBQ__jZUG-61-NIAugYFzXkfnaLmMWiIJ0uDQBuLucosu-CJBH7A_aem_qYZja7wLobP1RO0QligKVw",},
+  { id:idGen (), name:"MEGACURSO DE CHAT GPT", link:"https://drive.google.com/drive/mobile/folders/1ePA7EVH2JEZeKl8Hc8MAJX3rFoItFrFR?usp=sharing&fbclid=IwY2xjawLdeasBHaomlK7V3KWpSGW46H84Oe67NhTA1nKcFB2SfIV1xO_k4Wgrt1G9Rar_ow",},
+  { id:idGen (), name:"CURSO DE PIANO", link:"https://drive.google.com/drive/u/2/folders/1UygK9FLRo5m5UcwZ_wAG1N4HUdUEHHiN",},
+  { id:idGen (), name:"CURSO DE NEUROVENTAS", link:"https://drive.google.com/file/d/1GO6ey8pNCrOBEbz9I4DVRauhtk5j28Ui/view?usp=sharing",},
+  { id:idGen (), name:"CURSO DE EDICION EN CAT CUP", link:"https://drive.google.com/drive/folders/1hJFyDLzzb2NEn3Gl-oeNabBNbQ7tT8ej?usp=sharing",},
+  { id:idGen (), name:"PROGRAMACION CODIGO", link:"https://drive.google.com/drive/folders/1hdSylyYGvshO7SLYz7y5ZbYEo67WKFB3?usp=drive_link",},
+  { id:idGen (), name:"CURSO SOLIDWOR", link:"https://drive.google.com/drive/folders/1ksaePVDsNoXoK8DDHY5roteOHMkDG8AN",},
+  { id:idGen (), name:"CURSO FOTOSHOP", link:"https://drive.google.com/drive/folders/1RHUjYBkqKxXeTX57HJ8bVZi4DeHfTFqf?usp=sharing",},
+  { id:idGen (), name:"MENTE", link:"https://drive.google.com/drive/folders/1CRx0HU7T9SCMceGDL65E9uS0TkPzSDx",},
+  { id:idGen (), name:"LIBROS DE HIERBAS MEDICINALES", link:"https://www.transfernow.net/dl/20251101ucc1PtHp",},
+  { id:idGen (), name:"CURSOS CHAT GPT", link:"https://drive.google.com/drive/folders/15_Qf9T3PYSjbfA9dOoaE1coHfITpnAnV",},
+  { id:idGen (), name:"LIBROS DE PSICOLOGUIA OSCURA", link:"https://drive.google.com/drive/folders/1JLpKCIQ3Jnf95JS6EW8R4_9lsv59lGHs",},
+  { id:idGen (), name:"SDK LIBROS", link:"https://drive.google.com/drive/folders/15WHzqtSkSVE47j5_DZY3uVBrySVY0Bjv?usp=sharing",},
+  { id:idGen (), name:"LIBROS DE DISEÑO", link:"https://drive.google.com/drive/folders/1tDFQKMDxcDxsouGbvGaUzmznFtpp-2HU",},
+  { id:idGen (), name:"LIBROS DE SUPERACION PERSONAL", link:"https://drive.google.com/drive/mobile/folders/17hrIIu_NfsXKWEig96xekXkTb0mwzLg0?usp=sharing&fbclid=IwdGRzaANwbHpjbGNrA3BsbmV4dG4DYWVtAjExAAEehf4yD8POmshVteVsZMleiwSTtN4mW16YgvBUC5BG9_RPhNK32_khJT96SjY_aem_IviDprTfV5H4PxjwG-0CKg&sfnsn=scwspwa"},
+  { id:idGen (), name:"LIBROS DE LO OCULTO Y LO INSOLIDO", link:"https://drive.google.com/drive/folders/1LAQMiq8eYZaskPbyuBx-1MAwqcF1J5PM"},
+  { id:idGen (), name:"LIBROS DE ESTOICISMO", link:"https://drive.google.com/drive/folders/1_2aY1L_wgklqBl_NKWFMcWHlYbmkSsvj?usp=sharing"},
+  { id:idGen (), name:"LIBROS DE ENFERMERIA", link:"https://drive.google.com/drive/folders/1FCNlaQhjz1V3y5oO2f0OqmGJtZSwWg-N"},
+  { id:idGen (), name:"LIBROS DE HARBART", link:"https://drive.google.com/drive/folders/1OJk0wbAL5G546EyHFwqEYB6PJq0lqGRx?usp=sharing"},
+  { id:idGen (), name:"CURSO DROSHIPING", link:"https://drive.google.com/drive/folders/10F3Hc252PA7FjxIsMPHJ8Vt-E94wwjcb"},
+  { id:idGen (), name:"HISTORIA UNIVERSAL", link:"https://drive.google.com/drive/folders/1-0A_L9HRc3fzrnSzHxgvrSCV_j6q1nxD?usp=drive_link"},
+  { id:idGen (), name:"LIBROS DE EMPRENDIMIENTO", link:"https://drive.google.com/drive/u/0/mobile/folders/1vTRZBjGfh3RUsUxrV8I0Slm0AeFSrlWn?fbclid=IwAR3Sk_vVKzcxdeVniBapTkfimu8tH15scI2a8nIGZFSDr6fYF3MnmaY7QB8"},
+  { id:idGen (), name:"CURSO DE CIENCIA", link:"https://1024terabox.com/s/1y4vJndsYA4vMcc5_O9Xk_Q"},
+  { id:idGen (), name:"LIBROS DE CHAT GPT", link:"https://drive.google.com/drive/folders/1fL4akztChQia5xD4Or22C-qCxE5ipfCI"},
+  { id:idGen (), name:"CURSO DE AUTOMATIZACION", link:"https://drive.google.com/drive/mobile/folders/1dLoWcyMuriL0cB42TxN2MlGZHlXQRJLc?fbclid=IwdGRjcANo9WFjbGNrA2j1S2V4dG4DYWVtAjExAAEeFwr-ILy8mvSA2--zROR51aEfoyAfGbcPDrIYaMb92LKA1qmVB3o35CY0ITQ_aem_zYSi377m0xiXTxoH-k0D0A"},
+  { id:idGen (), name:"LIBROS DE AVES", link:"https://drive.google.com/drive/folders/1G4-apqtgp8ITdFDuWUX-Otz7SDrW3CJe"},
+  { id:idGen (), name:"LIBROS DE ESTOICISMO", link:"https://drive.google.com/drive/folders/1trVPlFN3wgghjF1JLWde22eUSNhy4BXv"},
+  { id:idGen (), name:"LIBROS DE PYHTON", link:"https://drive.google.com/drive/folders/1vdyd6UxDZAq3SS_czGw5xVF9FgWtyZfz"},
+  { id:idGen (), name:"INGLES", link:"https://drive.google.com/drive/folders/1SqweoVMwECVN7JQe_0pLuWcOCdcxKcMo"},
+  { id:idGen (), name:"LIBROS DE YOGA Y TERAPIA DE SANACION", link:"https://drive.google.com/drive/u/0/mobile/folders/1tETFs07t2LO1woycuMXHB6H3cCXpECQ5"},
+  { id:idGen (), name:"HISTORIA DE LA FILOSOFIA", link:"https://drive.google.com/drive/folders/1xQpO6C_Cxeg_kpja9tcmt3Bid5wMhIgj?fbclid=IwY2xjawNYpWdleHRuA2FlbQIxMABicmlkETF1dUtoVVhCYXEzeUg2VEh0AR4R0x15IAqqbJCkBd9byGNhU2GC_fNzA2yK5vdmESfbcj4fj_Cx2KtzeaRtdw_aem_H7wNUDRLXNhEdg4RDtt3TA"},
+  { id:idGen (), name:"HISTORIA UNIVERSAL", link:"https://drive.google.com/drive/u/0/mobile/folders/1FTJr1m4yydE_w2aOiQnL6KsGDnFYW5j6?fbclid=IwdGRjcAMsAJpjbGNrAypPh2V4dG4DYWVtAjExAAEeUVMHsPxq06KHzOuO3WpvLDegAcKZxvVRHycmm_9LLmSfifYuBPp1z6y-Q0c_aem_q4WFIbCKPKQCXAqDGF6ATQ"}, 
+];
+
+
+function idGen(){ return Math.floor(Math.random()*9999999); }
+
+const list = document.getElementById("list");
+const search = document.getElementById("search");
+
+function guardar() {
+  localStorage.setItem("mundoDocs", JSON.stringify(docs));
+}
+
+function mostrar(filtro = "") {
+  list.innerHTML = "";
+  docs.forEach(doc => {
+    if (filtro && !doc.name.toLowerCase().includes(filtro.toLowerCase())) return;
+
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <b>${doc.name}</b><br>
+      ${doc.desc}<br><br>
+
+      <button class="blueBtn" onclick="window.open('${doc.link}','_blank')">Abrir</button>
+      <button class="grayBtn" onclick="navigator.clipboard.writeText('${doc.link}')">Copiar enlace</button>
+      <button class="redBtn" onclick="eliminar(${doc.id})">Eliminar</button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function eliminar(id){
+  docs = docs.filter(d => d.id !== id);
+  guardar();
+  mostrar(search.value);
+}
+
+search.addEventListener("input", () => mostrar(search.value));
+
+document.getElementById("addBtn").addEventListener("click", () => {
+  modal.style.display = "flex";
+});
+
+document.getElementById("close").addEventListener("click", () => {
+  modal.style.display = "none";
+});
+
+document.getElementById("save").addEventListener("click", () => {
+  const n = dname.value.trim();
+  const l = dlink.value.trim();
+  const d = ddesc.value.trim();
+
+  if (!n || !l) {
+    alert("Completa nombre y enlace");
+    return;
+  }
+
+  docs.push({
+    id: Date.now(),
+    name: n,
+    link: l,
+    desc: d
+  });
+
+  guardar();
+  mostrar(search.value);
+  modal.style.display = "none";
+
+  dname.value = "";
+  dlink.value = "";
+  ddesc.value = "";
+});
+
+mostrar();
+</script>
+
+</body>
+</html>
